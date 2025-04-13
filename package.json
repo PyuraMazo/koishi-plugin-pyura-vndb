@@ -1,0 +1,31 @@
+{
+  "name": "koishi-plugin-vndb",
+  "description": "vndb api for koishi",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "contributors": [                         
+    "Pyura <1605025385@qq.com>"
+  ],
+  "repository": {                           
+    "type": "git",
+    "url": "git+https://github.com/PyuraMazo/koishi-plugin-vndb.git"
+  },
+  "license": "MIT",
+  "scripts": {},
+  "keywords": [
+    "chatbot",
+    "koishi",
+    "plugin",
+    "vndb",
+    "galgame"
+  ],
+  "devDependencies": {},
+  "peerDependencies": {
+    "koishi": "4.18.7"
+  }
+}
