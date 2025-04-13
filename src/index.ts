@@ -1,10 +1,10 @@
 import { Context, Schema } from 'koishi'
 import RequestApi from './components/request'
 
-export const name = 'vndb'
+export const name = 'pyura-vndb'
 
 export interface Config {
-  startTips: boolean;
+  startTips: boolean
 }
 
 export const Config: Schema<Config> = Schema.object({
@@ -17,12 +17,6 @@ export const inject = {
 
 export function apply(ctx: Context) {
   
-  ctx
-  .middleware((session, next) => {
-    
-    return next();
-  }, true)
-
   ctx
   .command('vndb <search: string> [...more: string]', '查找vndb中的搜索结果')
   .option("method", "-m <method_type: string> 搜索类型（vn/producer/character）")

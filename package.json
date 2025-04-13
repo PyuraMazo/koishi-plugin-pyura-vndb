@@ -1,7 +1,7 @@
 {
-  "name": "koishi-plugin-vndb",
+  "name": "koishi-plugin-pyura-vndb",
   "description": "vndb api for koishi",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -16,16 +16,21 @@
     "url": "git+https://github.com/PyuraMazo/koishi-plugin-vndb.git"
   },
   "license": "MIT",
-  "scripts": {},
   "keywords": [
     "chatbot",
     "koishi",
-    "plugin",
-    "vndb",
-    "galgame"
+    "plugin"
   ],
-  "devDependencies": {},
   "peerDependencies": {
-    "koishi": "4.18.7"
+    "koishi": "^4.18.7"
+  },
+  "dependencies": {
+    "@koishijs/plugin-http": "^0.6.3"
+  },
+  "koishi": {
+    "service": {
+      "required": ["http"]
+    },
+    "preview": true
   }
 }
