@@ -49,12 +49,19 @@ export class RequestApi implements api {
 
     async run() {
         const reqs = await this.go(this.session);
-        await Promise.all(reqs);
+        const cmdArr: string[] = await Promise.all(reqs);
+        cmdArr.forEach(v => {
+          try {
+            this.session.sendQueued(v);
+          } catch {
+            this.session.send(`${`某些消息发送失败，重试可能解决问题`}`)
+          }
+        })
     }
 
-    async go(_session: Session): Promise<Promise<void>[]> {
+    async go(_session: Session): Promise<Promise<string>[]> {
         try {
-            let requests: Promise<void>[] = [];
+            let requests: Promise<string>[] = [];
             
             // 初始化分类对象
             switch (this.category) {
@@ -62,7 +69,7 @@ export class RequestApi implements api {
                 this.cateObj = new VnMethod(this.scheme);
                 break;
               case "producer":
-                this.cateObj = new ProducerMethod();
+                this.cateObj = new ProducerMethod(this.ctx);
                 break;
               case "character":
                 this.cateObj = new CharacterMethod(this.scheme);
@@ -79,18 +86,25 @@ export class RequestApi implements api {
                   : []
               );
               
-              this.payload = this.buildPayload(v, resWords);
+              this.payload = this.buildPayload(v, resWords, "search");
               
               const res = await this.request(this.apiUrl, this.payload, this.header);
-              const cmd = await (this.cateObj as VnMethod | CharacterMethod).run(
-                this.category === "vn" || this.category === "character" 
-                  ? this.scheme 
-                  : undefined, 
-                res
-              );
-              _session.sendQueued(cmd);
+              if (res["results"].length === 0) {
+                _session.send(`没有关键词~${v}~的搜索结果，注意简繁体`);
+                return;
+              }
+
+              const cmd = this.category === "producer"
+              ? await (this.cateObj as ProducerMethod).run(res)
+              : await (this.cateObj as VnMethod | CharacterMethod).run(this.scheme, res);
+              
+              return cmd;
             });
-            _session.send("查找开始...")
+
+            if (this.userConfig.startTips) {
+              _session.send("查找开始...")
+            }
+            
             return requests;
           } catch (error) {
             console.error('执行过程中出错:', error);
@@ -102,9 +116,9 @@ export class RequestApi implements api {
         this.userConfig.startTips = _config.startTips;
     }
 
-    buildPayload (_searchKey: string, _expectWords: string[]): object {
+    buildPayload (_searchKey: string, _expectWords: string[], standard: string): object {
         return {
-            "filters": ["search", "=", _searchKey],
+            "filters": [standard, "=", _searchKey],
             "fields": _expectWords.join(",")
         }
     }

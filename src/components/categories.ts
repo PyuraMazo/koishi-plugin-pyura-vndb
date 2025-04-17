@@ -1,5 +1,6 @@
 import { HandleOutput, argSet } from "../tools/handleOutput"
 import { autoConn } from "../tools/autoConnect"
+import { Context } from "koishi";
 
 export interface categoryBase {
     resWords: string[];
@@ -99,7 +100,9 @@ export class VnMethod extends HandleOutput implements categoryBase {
 }
 
 export class ProducerMethod extends HandleOutput implements categoryBase  {
+    currentId: string;
     resWords: string[] = ["id","aliases","lang","type","name","original"];
+    resWordsVn: string[] = ["alttitle","title","released","rating"];
     chsWords: string[] = ["vndb唯一id","别称","语言","类型",];
     currentChoice: argSet = {
         argSourceArr: [],
@@ -108,9 +111,11 @@ export class ProducerMethod extends HandleOutput implements categoryBase  {
         kindKey2Value: [],
         kindkey2Arr: []
     };
+    ctx: Context;
 
-    constructor () {
+    constructor (_ctx: Context) {
         super();
+        this.ctx = _ctx;
         this.currentChoice.argConnSymbol = "、",
         this.currentChoice.argSourceArr = this.resWords;
         this.currentChoice.argChsArr = this.chsWords;
@@ -122,24 +127,48 @@ export class ProducerMethod extends HandleOutput implements categoryBase  {
         return this.buildCmdStr(_resObj);
     }
 
-    buildCmdStr (_resObj: object): string {
+    async buildCmdStr (_resObj: object): Promise<string> {
         try {
             let handled = "<message forward>";
             const matched: object[] = _resObj["results"];
-            matched.forEach((v) => {
+
+            for (const item of matched) {
+                this.currentId = String(item["id"]);
+
                 handled += "<message>";
-                
-                handled += this.outputProducerName(v);
-                handled += `公司类型：${this.outputProducerType(v)}`;
-                handled += autoConn(this.currentChoice, v);
+
+                handled += this.outputProducerName(item);
+                handled += `类型：${this.outputProducerType(item)}`;
+                handled += autoConn(this.currentChoice, item);
+                handled += await this.releaseWork();
 
                 handled += "</message>";
-            })
+            }
                 
             return handled + "</message>";
         } catch (e) {
             return String(e);
         }
+    }
+
+    async releaseWork(): Promise<string> {
+        const payload = {
+            "filters": ["developer", "=", ["id", "=", this.currentId]],
+            "fields": this.resWordsVn.join(","),
+            "sort": "rating",
+            "reverse": true,
+            "results": 10
+        }
+
+        const res: object = await this.ctx.http.post("https://api.vndb.org/kana/vn", payload, {headers: {
+            "Content-Type": "application/json"
+        }});
+
+        let str = "创作作品（评分降序）：\n";
+        res["results"].forEach((v, i) => {
+            str += `${i + 1}    ${v["rating"]}    ${v["alttitle"] || v["title"]}    ${String(v["released"])}\n`
+        })
+        return str;
     }
 }
 

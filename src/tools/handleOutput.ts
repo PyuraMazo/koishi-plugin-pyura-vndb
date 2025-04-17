@@ -55,14 +55,19 @@ export class HandleOutput {
 
     // 一张封面图的url
     ouputCoverImg (_singleObj: object): string {
-        return `<img src="${_singleObj["image"]["url"]}"/>`
+        try { 
+            return `<img src="${_singleObj["image"]["url"]}"/>`
+        } catch {
+            return "---图片链接失效！\n"
+        }
+        
     }
 
     // 出版商名+id
     outputProducersInfo (_singleObj: object): string {
         let str = "出版商（id）：";
         _singleObj["developers"].forEach(v => {
-            str += v["original"] ? `${v["original"]}` : `${v["name"]}` ;
+            str += v["original"] || `${v["name"]}` ;
             str += `（${String(v["id"])}）\n`;
         })
         return str;
@@ -81,7 +86,7 @@ export class HandleOutput {
 
     outputProducerName (_singleObj: object): string {
         let str = "名称：";
-        str += _singleObj["original"] ? `${_singleObj["original"]}\n` : `${_singleObj["name"]}\n`;
+        str += _singleObj["original"] || `${_singleObj["name"]}\n`;
         return str;
     }
 

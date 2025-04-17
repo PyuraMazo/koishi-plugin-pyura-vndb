@@ -1,4 +1,5 @@
 import { HandleOutput, argSet } from "../tools/handleOutput";
+import { Context } from "koishi";
 export interface categoryBase {
     resWords: string[];
     chsWords: string[];
@@ -17,12 +18,16 @@ export declare class VnMethod extends HandleOutput implements categoryBase {
     buildlessCmdStr(_resObj: object): string;
 }
 export declare class ProducerMethod extends HandleOutput implements categoryBase {
+    currentId: string;
     resWords: string[];
+    resWordsVn: string[];
     chsWords: string[];
     currentChoice: argSet;
-    constructor();
+    ctx: Context;
+    constructor(_ctx: Context);
     run(_resObj: object): Promise<string>;
-    buildCmdStr(_resObj: object): string;
+    buildCmdStr(_resObj: object): Promise<string>;
+    releaseWork(): Promise<string>;
 }
 export declare class CharacterMethod extends HandleOutput implements categoryBase {
     innerWords: string[];
