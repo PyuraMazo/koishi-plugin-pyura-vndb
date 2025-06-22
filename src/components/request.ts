@@ -86,7 +86,7 @@ export class RequestApi implements api {
                   : []
               );
               
-              this.payload = this.buildPayload(v, resWords, "search");
+              this.payload = this.buildPayload(v, resWords, "search", this.scheme);
               
               const res = await this.request(this.apiUrl, this.payload, this.header);
               if (res["results"].length === 0) {
@@ -116,15 +116,22 @@ export class RequestApi implements api {
         this.userConfig.startTips = _config.startTips;
     }
 
-    buildPayload (_searchKey: string, _expectWords: string[], standard: string): object {
-        return {
-            "filters": [standard, "=", _searchKey],
+    buildPayload (_searchKey: string, _expectWords: string[], _standard: string, _scheme: number): object {
+        if (_scheme === 1) {
+          return {
+            "filters": [_standard, "=", _searchKey],
+            "fields": _expectWords.join(","),
+            "results": 1
+        }} else {
+          return {
+            "filters": [_standard, "=", _searchKey],
             "fields": _expectWords.join(",")
-        }
+        }}
+
     }
 
     async request (_url: string, _payload: object, _header: object) {
-        return await this.ctx.http.post(_url, _payload, {headers: _header});
+      return await this.ctx.http.post(_url, _payload, {headers: _header});
     }
 }
 

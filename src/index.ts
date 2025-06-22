@@ -29,27 +29,27 @@ export const inject = {
 
 export function apply(ctx: Context) {
   
-  init(ctx);
+  // init(ctx);
   
   
   ctx
   .command('vndb <...searchKey: string>', '查找vndb中的搜索结果')
   .option("method", "-m <methodType: string> 搜索类型（vn/producer/character）")
-  .option("scheme", "-s <schemeKey: number> 显示方案（0/1）")
+  .option("fuzzy", "-f 开启模糊搜索")
   .usage('~不指定选项时默认搜索视觉小说并输出简约的信息结果~')
-  .example('①vndb -m character -s 1 水上由岐\n显示更全面的角色-水上由岐的信息\n②vndb -m producer AUGUST 枕\n显示简约的出版商AUGUST、枕社的信息')
+  .example('①vndb -m character -f 爱丽丝\n模糊查找名字中带有-爱丽丝-的人物\n②vndb -m producer AUGUST 枕\n仅查找出版商AUGUST、枕社的信息')
   .action(async ({session, options}, ...searchKey) => {
     
     const method: string = options["method"] || "vn";
-    const scheme: number = options["scheme"] || 0;
+    const scheme: number = options["fuzzy"] ? 0 : 1;
 
     new RequestApi(searchKey, method, scheme, ctx, session).run();
   })
 
 
-  ctx
-  .command('vntoday')
-  .action(async ({session}) => {
-    session.send(await init(ctx));
-  })
+  // ctx
+  // .command('vntoday', '看看今天是什么特殊的日子')
+  // .action(async ({session}) => {
+  //   session.send(await init(ctx));
+  // })
 }

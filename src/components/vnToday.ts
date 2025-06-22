@@ -25,7 +25,7 @@ export class VnToday {
             str += "那年今天，这些GAL/VN发布了...\n";
             res.forEach(v => {
                 str += v["image"]["url"] ? `<img src="${v["image"]["url"]}"/>` : "图片出错了！\n";
-                str += `${v["released"]}，${v["alttitle"] || v["title"]}发布了！\n-----\n`
+                str += `${v["released"]}《${v["alttitle"] || v["title"]}》发布了！\n-----\n`
             })
         } else if (this.method === "character") {
             str += "<message>你知道吗，今天是这些角色的生日，有你认识的吗？\n\n";

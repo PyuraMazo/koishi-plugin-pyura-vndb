@@ -31,7 +31,7 @@ export declare class RequestApi implements api {
     run(): Promise<void>;
     go(_session: Session): Promise<Promise<string>[]>;
     transferConfig(_config: Config): void;
-    buildPayload(_searchKey: string, _expectWords: string[], standard: string): object;
+    buildPayload(_searchKey: string, _expectWords: string[], _standard: string, _scheme: number): object;
     request(_url: string, _payload: object, _header: object): Promise<any>;
 }
 export default RequestApi;
