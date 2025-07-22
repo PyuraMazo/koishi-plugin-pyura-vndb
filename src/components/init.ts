@@ -15,8 +15,8 @@ export async function init (_ctx: Context) {
 export class Init {
     now: string;
     ctx: Context;
-    vnSearch: string[] = ["alttitle","title","released","image{url}"];
-    chaSearch: string[] = ["original","name","image{url}","vns{alttitle,title}"];
+    vnSearch: string[] = ["alttitle","title","released","image{url}","rating"];
+    chaSearch: string[] = ["original","name","image{url}","vns{alttitle,title,rating}"];
 
     constructor (_ctx: Context) {
         this.now = this.getNow();

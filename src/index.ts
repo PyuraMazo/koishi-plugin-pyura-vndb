@@ -29,7 +29,7 @@ export const inject = {
 
 export function apply(ctx: Context) {
   
-  // init(ctx);
+  init(ctx);
   
   
   ctx
@@ -47,9 +47,9 @@ export function apply(ctx: Context) {
   })
 
 
-  // ctx
-  // .command('vntoday', '看看今天是什么特殊的日子')
-  // .action(async ({session}) => {
-  //   session.send(await init(ctx));
-  // })
+  ctx
+  .command('vntoday', '看看今天是什么特殊的日子')
+  .action(async ({session}) => {
+    session.send(await init(ctx));
+  })
 }
