@@ -62,7 +62,7 @@ export class VnMethod extends HandleOutput implements categoryBase {
             matched.forEach((v) => {
                 handled += "<message>";
                 
-                handled += this.ouputCoverImg(v);
+                handled += this.outputCoverImg(v);
                 handled += this.outputMoreLangTitles(v);
                 handled += autoConn(this.currentChoice, v);
                 handled += `开发状态：${this.outputVnVnDevstatus(v)}`;
@@ -84,7 +84,7 @@ export class VnMethod extends HandleOutput implements categoryBase {
             matched.forEach((v) => {
                 handled += "<message>";
                 
-                handled += this.ouputCoverImg(v);
+                handled += this.outputCoverImg(v);
                 handled += this.outputlessLangTitles(v);
                 handled += autoConn(this.currentChoice, v);
                 handled += this.outputProducersInfo(v);
@@ -102,8 +102,8 @@ export class VnMethod extends HandleOutput implements categoryBase {
 export class ProducerMethod extends HandleOutput implements categoryBase  {
     currentId: string;
     resWords: string[] = ["id","aliases","lang","type","name","original"];
-    resWordsVn: string[] = ["alttitle","title","released","rating"];
-    chsWords: string[] = ["vndb唯一id","别称","语言","类型",];
+    resWordsVn: string[] = ["alttitle","title","released","rating","image.url"];
+    chsWords: string[] = ["vndb唯一id","别称","语言","类型"];
     currentChoice: argSet = {
         argSourceArr: [],
         argChsArr: [],
@@ -157,7 +157,7 @@ export class ProducerMethod extends HandleOutput implements categoryBase  {
             "fields": this.resWordsVn.join(","),
             "sort": "rating",
             "reverse": true,
-            "results": 10
+            "results": 8
         }
 
         const res: object = await this.ctx.http.post("https://api.vndb.org/kana/vn", payload, {headers: {
@@ -166,7 +166,7 @@ export class ProducerMethod extends HandleOutput implements categoryBase  {
 
         let str = "创作作品（评分降序）：\n";
         res["results"].forEach((v, i) => {
-            str += `${i + 1}    ${v["rating"]}    ${v["alttitle"] || v["title"]}    ${String(v["released"])}\n`
+            str += `${i + 1}    ${v["rating"]}    ${v["alttitle"] || v["title"]}    ${String(v["released"])}\n${this.outputCoverImg(v)}\n`
         })
         return str;
     }
@@ -226,7 +226,7 @@ export class CharacterMethod extends HandleOutput implements categoryBase  {
             matched.forEach((v) => {
                 handled += "<message>";
                 
-                handled += this.ouputCoverImg(v);
+                handled += this.outputCoverImg(v);
                 handled += autoConn(this.currentChoice, v);
                 handled += this.outputCharacterGenderMore(v);
                 handled += this.outputCharacterVns(v);
@@ -251,7 +251,7 @@ export class CharacterMethod extends HandleOutput implements categoryBase  {
             matched.forEach((v) => {
                 handled += "<message>";
                 
-                handled += this.ouputCoverImg(v);
+                handled += this.outputCoverImg(v);
                 handled += autoConn(this.currentChoice, v);
                 handled += this.outputCharacterGenderLess(v);
                 handled += this.outputCharacterVns(v);

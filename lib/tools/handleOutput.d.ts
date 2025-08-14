@@ -10,7 +10,7 @@ export declare class HandleOutput {
     outputMoreLangTitles(_singleObj: object): string;
     outputlessLangTitles(_singleObj: object): string;
     outputObjProperties(_innerObj: object, _properties: string[], _chsMatch: string[]): string;
-    ouputCoverImg(_singleObj: object): string;
+    outputCoverImg(_singleObj: object): string;
     outputProducersInfo(_singleObj: object): string;
     outputVnVnDevstatus(_singleObj: object): string;
     outputProducerName(_singleObj: object): string;

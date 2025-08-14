@@ -15,5 +15,6 @@ declare module "koishi" {
 }
 export declare const inject: {
     required: string[];
+    optional: string[];
 };
 export declare function apply(ctx: Context): void;

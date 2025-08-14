@@ -54,7 +54,7 @@ export class HandleOutput {
     }
 
     // 一张封面图的url
-    ouputCoverImg (_singleObj: object): string {
+    outputCoverImg (_singleObj: object): string {
         try { 
             return `<img src="${_singleObj["image"]["url"]}"/>`
         } catch {

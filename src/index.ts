@@ -1,6 +1,10 @@
 import { Context, Schema } from 'koishi'
 import RequestApi from './components/request'
-import { init } from './components/init'
+import { init } from './components/initCmd'
+import {} from 'koishi-plugin-puppeteer'
+
+
+    import { DownloadImg } from "./components/downloadImg";
 
 
 export const name = 'pyura-vndb'
@@ -24,7 +28,8 @@ declare module "koishi" {
 }
 
 export const inject = {
-  required: ["http", "database"]
+  required: ["http", "database"],
+  optional: ["puppeteer"]
 }
 
 export function apply(ctx: Context) {
@@ -50,6 +55,8 @@ export function apply(ctx: Context) {
   ctx
   .command('vntoday', '看看今天是什么特殊的日子')
   .action(async ({session}) => {
-    session.send(await init(ctx));
+    return `<img src=${'data:image/png;base64,' + await init(ctx)}`
   })
+
+ 
 }

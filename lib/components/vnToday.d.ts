@@ -8,13 +8,6 @@ export declare class VnToday {
     search: string;
     rate_filter: number;
     constructor(_date: string, _response: string[], _ctx: Context, _method: string, _search: string, _rate_filter?: number);
-    run(): Promise<string>;
+    run(): Promise<Object[]>;
     request(_method: string, _search: string, _response: string, _dateArr: string[]): Promise<object[]>;
-    polishText(_unique: PolishText, ..._info: string[]): Promise<string>;
-    getOne(array: string[]): Promise<string>;
 }
-declare const enum PolishText {
-    Vn = 0,
-    Cha = 1
-}
-export {};
