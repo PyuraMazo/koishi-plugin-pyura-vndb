@@ -42,7 +42,7 @@ export class RequestApi implements api {
     }
 
     async run() {
-        const reqs = await this.go(this.session);
+        const reqs = await this.go(this.session); 
         if (!reqs) return;
         const cmdArr: string[] = await Promise.all(reqs);
         cmdArr.forEach(v => {

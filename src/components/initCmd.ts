@@ -13,6 +13,14 @@ export async function init(_ctx: Context) {
 }
 
 export async function load(_ctx: Context) {
+    _ctx.model.extend("vn_today_data", {
+            id: "unsigned",
+            date: "string",
+            cmd: "text"
+        }, {
+            primary: 'id',
+            autoInc: true
+        })
     new Init(_ctx).deleteTodayData();
 }
 
