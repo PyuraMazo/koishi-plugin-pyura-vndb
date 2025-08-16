@@ -13,21 +13,28 @@ export class DownloadImg{
     }
 
     async download(): Promise<string[]> {
-        return await Promise.all(
+        return Promise.allSettled(
         this.tasks.map(async (item, index) => {
-            if (item === "unknown") return "unknown";
-            
+            let retry = 0;
+            while (retry <= this.ctx.config.retryCount){
             try {
-            const source = await this.ctx.http.get(item, { responseType: 'arraybuffer' });
-            const file = path.join(this.storagePath, `${index}.png`);
-            
-            await fs.promises.writeFile(file, Buffer.from(source));
-            return file; 
+                retry++;
+                if (item === "unknown") return "unknown";
+                const source = await this.ctx.http.get(item, { responseType: 'arraybuffer' });
+                const file = path.join(this.storagePath, `${index}.png`);
+                await fs.promises.writeFile(file, Buffer.from(source));
+                return file;
             } catch (err) {
-            console.log(`链接 ${item} 保存失败`);
-            throw err; 
+                if (this.ctx.config.debug) {
+                    console.log(`第${retry}次下载图片：${item}失败`)
+                }
             }
+            }
+            if (this.ctx.config.debug) console.log(`图片链接 ${item} 保存失败`);
+            return "error";
         })
+        ).then(results => 
+        results.map(r => r.status === 'fulfilled' ? r.value : path.join(this.storagePath, `error.png`))
         );
     }
 

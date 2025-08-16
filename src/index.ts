@@ -1,25 +1,38 @@
 import { Context, Schema } from 'koishi'
 import RequestApi from './components/request'
-import { init } from './components/initCmd'
+import { init, load } from './components/initCmd'
 import {} from 'koishi-plugin-puppeteer'
-
-
-    import { DownloadImg } from "./components/downloadImg";
 
 
 export const name = 'pyura-vndb'
 
 export interface Config {
-  startTips: boolean
+  startTips: boolean,
+  retryCount: number,
+  filterRating: number,
+  debug: boolean
 }
 
-export const Config: Schema<Config> = Schema.object({
-  startTips: Schema.boolean().default(false).description("开始查找提示")
-})
+export const Config: Schema<Config> = Schema.intersect([
+  Schema.object({
+    startTips: Schema.boolean().default(false).description("开始查找提示"),
+    retryCount: Schema.number().min(0).max(5).default(2).description("最大请求重试次数")
+  }).description('全局配置'),
+
+  Schema.object({
+    filterRating: Schema.number().min(60).max(85).default(70).description("过滤低于此评分的作品的内容展示")
+  }).description('VnToday配置'),
+
+  Schema.object({
+    debug: Schema.boolean().default(false).description("输出详细日志")
+  }).description('开发者模式')
+]
+)
+
 
 declare module "koishi" {
   interface Tables {
-    vndbDate: {
+    vn_today_data: {
       id: number;
       date: string;
       cmd: string;
@@ -33,8 +46,10 @@ export const inject = {
 }
 
 export function apply(ctx: Context) {
-  
-  init(ctx);
+  if (ctx.config.debug) {
+    console.log("插件重载，删除当日数据库信息。");
+    load(ctx);
+  }
   
   
   ctx
@@ -55,8 +70,6 @@ export function apply(ctx: Context) {
   ctx
   .command('vntoday', '看看今天是什么特殊的日子')
   .action(async ({session}) => {
-    return `<img src=${'data:image/png;base64,' + await init(ctx)}`
+    return await init(ctx);
   })
-
- 
 }

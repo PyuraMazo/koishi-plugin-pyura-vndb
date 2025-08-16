@@ -8,15 +8,19 @@ export interface ResponseInfo {
     characterField: object;
 }
 
-export async function init (_ctx: Context) {
+export async function init(_ctx: Context) {
     return await new Init(_ctx).init();
-  }
+}
+
+export async function load(_ctx: Context) {
+    new Init(_ctx).deleteTodayData();
+}
 
 
 export class Init {
     now: string;
     ctx: Context;
-    vnSearch: string[] = ["alttitle","title","released","image{url}","rating"];
+    vnSearch: string[] = ["alttitle","title","released","image{url}","rating","developers{original,name}"];
     chaSearch: string[] = ["original","name","image{url}","vns{alttitle,title,rating}"];
 
     constructor (_ctx: Context) {
@@ -24,8 +28,8 @@ export class Init {
         this.ctx = _ctx;
     }
 
-    async init(): Promise< string> {
-        this.ctx.model.extend("vndbDate", {
+    async init(): Promise<string> {
+        this.ctx.model.extend("vn_today_data", {
             id: "unsigned",
             date: "string",
             cmd: "text"
@@ -34,7 +38,7 @@ export class Init {
             autoInc: true
         })
 
-        const res: Tables["vndbDate"][] = await this.ctx.database.get("vndbDate", {
+        const res: Tables["vn_today_data"][] = await this.ctx.database.get("vn_today_data", {
             date: this.now
         })
         if (res.length === 0) {
@@ -42,9 +46,11 @@ export class Init {
             const chaRes = new VnToday(this.now, this.chaSearch, this.ctx, "character", "birthday").run();
             const wait = await Promise.all([vnRes, chaRes]);
 
+            if (!wait[0] || !wait[1]) return "执行失败...网络请求失败...增加重试次数或解决问题。";
+
             const img = await new CreateImgVT(this.ctx, wait).run();
 
-            this.ctx.database.create("vndbDate", {
+            this.ctx.database.create("vn_today_data", {
                 date: this.now,
                 cmd: img
             })
@@ -58,7 +64,11 @@ export class Init {
 
     }
 
-
+    deleteTodayData() {
+        this.ctx.database.remove("vn_today_data", {
+            date: this.now
+        })
+    }
 
     getNow() {
         const now = new Date();

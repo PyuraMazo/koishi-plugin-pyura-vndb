@@ -10,6 +10,8 @@ export declare class CreateImgVT {
     constructor(_ctx: Context, _res: Object[][]);
     run(): Promise<string>;
     download(): Promise<void>;
-    getProdecer(s: Object[]): string;
+    getProducer(s: Object[]): string;
     filterRating(): Object[][];
+    vnsSatisfy(vns: Object[]): boolean;
+    vnsArr(vns: Object[]): string;
 }

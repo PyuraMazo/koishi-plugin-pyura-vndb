@@ -1,10 +1,16 @@
 import path  from "path";
 
 export class VnTodayHtml{
+    date: string;
+    week: string;
     content_1: string = "";
     content_2: string = "";
     subtitle_1: string;
     subtitle_2: string;
+
+    constructor() {
+        this.getDate();
+    }
 
     build(): string{
         return `
@@ -21,6 +27,10 @@ export class VnTodayHtml{
                     @font-face {
                         font-family: "CN";
                         src: url("${path.join(__dirname, "fonts/GeTeShiZiTi-1.ttf")}");
+                    }
+                    @font-face {
+                        font-family: "CN_1";
+                        src: url("${path.join(__dirname, "fonts/Hangyaku-L3oaG.ttf")}");
                     }
                     * {
                         margin: 0;
@@ -41,6 +51,11 @@ export class VnTodayHtml{
                         font-size: 50px;
                         color:blue;
                     }
+                    .today {
+                        font-family: "CN_1";
+                        font-size: 40px;
+                        color:rgb(86, 86, 227);
+                    }
                     .content {
                         display: flex;
                         flex-direction: column;
@@ -60,6 +75,17 @@ export class VnTodayHtml{
                         display: flex;
                         margin-top: 25px;
                     }
+                    .legend_block {
+                        width: 600px;
+                        height: 250px;
+                        display: flex;
+                        margin-top: 25px;
+                        box-shadow: 3px 2px 2px 2px rgb(184, 186, 36);
+                        background-image: 
+                            linear-gradient(90deg, rgb(2, 172, 144),rgb(2, 107, 172),rgb(33, 136, 220),rgb(37, 63, 210),rgb(6, 151, 180),rgb(2, 172, 144));
+                        background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                    }
                     .img {
                         margin-left: 30px;
                         width: 250px;
@@ -78,6 +104,7 @@ export class VnTodayHtml{
             </head>
             <body>
                 <div class="title">今日GAL</div>
+                <div class="today">~ ${this.date} ~ ${this.week} ~</div>
                 <div class="content">
                 <div class="subtitle" id="vn">${this.subtitle_1}</div>
                 ${this.content_1}
@@ -114,8 +141,31 @@ export class VnTodayHtml{
         <div class="img" style='background-image: url("${info.img}");'></div>
         <div class="text">
         ${info.name}<br>
-        登场作品：<br>《${info.game}》</div></div>
+        登场作品：<br>${info.game}</div></div>
         `
+    }
+
+    insertLegendBlock_1(info: VnTodayInfo_1, rating: number){
+        this.content_1 += `
+        <div class="legend_block">
+        <div class="img" style='background-image: url("${info.img}");'></div>
+        <div class="text">
+        ${info.title}<br>
+        发售日：<br>${info.date}<br>
+        厂商：<br>${info.producer}<br>
+        ★评分：${rating}</div></div>
+        `
+    }
+
+    getDate() {
+        const now = new Date();
+        const year = String(now.getFullYear());
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        const week = now.getDay();
+        const weekArr = ["日","月","火","水","木","金","土"];
+        this.date = `${year}年${month}月${day}日`;
+        this.week = weekArr[week] + "曜日";
     }
 }
 

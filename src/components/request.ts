@@ -1,10 +1,7 @@
 import { Context, Session } from "koishi";
 import { VnMethod, ProducerMethod, CharacterMethod } from "./categories"
-import { Config } from "..";
 
-export interface transferObj {
-    startTips: boolean;
-}
+
 
 export interface api {
     searchKey: string[];
@@ -15,7 +12,6 @@ export interface api {
     cateObj: object;
     scheme: number;
     ctx: Context;
-    userConfig: transferObj;
     session: Session;
 }
 
@@ -30,10 +26,8 @@ export class RequestApi implements api {
     cateObj: VnMethod | ProducerMethod | CharacterMethod;
     scheme: number;
     ctx: Context;
-    userConfig: transferObj = {
-        startTips: false
-    };
     session: Session;
+    startTips: boolean;
     
 
 
@@ -43,18 +37,19 @@ export class RequestApi implements api {
         this.category = _category;
         this.apiUrl = "https://api.vndb.org/kana/" + _category;
         this.ctx = _ctx;
-        this.transferConfig(_ctx.config);
+        this.startTips = _ctx.config.startTips;
         this.session = _session;
     }
 
     async run() {
         const reqs = await this.go(this.session);
+        if (!reqs) return;
         const cmdArr: string[] = await Promise.all(reqs);
         cmdArr.forEach(v => {
           try {
             this.session.sendQueued(v);
           } catch {
-            this.session.send(`${`某些消息发送失败，重试可能解决问题`}`)
+            this.session.send(`${`某些消息发送失败，重试或解决问题`}`)
           }
         })
     }
@@ -89,7 +84,11 @@ export class RequestApi implements api {
               this.payload = this.buildPayload(v, resWords, "search", this.scheme);
               
               const res = await this.request(this.apiUrl, this.payload, this.header);
-              if (res["results"].length === 0) {
+              if (!res) {
+                _session.send("执行失败...网络请求失败...增加重试次数或解决问题。");
+                return;
+              }
+              else if (res["results"].length === 0) {
                 _session.send(`没有关键词~${v}~的搜索结果，注意简繁体`);
                 return;
               }
@@ -101,7 +100,7 @@ export class RequestApi implements api {
               return cmd;
             });
 
-            if (this.userConfig.startTips) {
+            if (this.startTips) {
               _session.send("查找开始...")
             }
             
@@ -110,10 +109,6 @@ export class RequestApi implements api {
             console.error('执行过程中出错:', error);
             _session.send('操作失败: ' + error.message);
           }
-    }
-
-    transferConfig (_config: Config) {
-        this.userConfig.startTips = _config.startTips;
     }
 
     buildPayload (_searchKey: string, _expectWords: string[], _standard: string, _scheme: number): object {
@@ -131,7 +126,20 @@ export class RequestApi implements api {
     }
 
     async request (_url: string, _payload: object, _header: object) {
-      return await this.ctx.http.post(_url, _payload, {headers: _header});
+      let res = {};
+
+      let retry = 0; 
+      while (retry <= this.ctx.config.retryCount) {
+        try{
+          retry++;
+          res = await this.ctx.http.post(_url, _payload, {headers: _header});
+          break;
+        } catch(err) {
+          if (this.ctx.config.debug) console.log(`第${retry}次请求api失败...`);
+        }
+      }
+
+      return res;
     }
 }
 

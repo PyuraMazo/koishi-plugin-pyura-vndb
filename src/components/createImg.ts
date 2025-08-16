@@ -20,36 +20,37 @@ export class CreateImgVT {
     async run(): Promise<string> {
         [this.res_vn, this.res_cha] = this.filterRating();
 
-        let circle = 0;
-        while(circle < 3) {
+        let retry = 0;
+        while(retry <= this.ctx.config.retryCount) {
             try {
-                circle++;
+                retry++;
                 await this.download();
+                break;
             } catch (err) {
-                console.log(`进行第${circle}次重试...`);
+                if (this.ctx.config.debug) console.log(`第${retry}次下载图片失败...`);
             }
-            break;
         }
         
         const html = new VnTodayHtml();
-
+        
         let i = 0;
         let j = 0;
         this.res_vn.forEach(v => {
             const info: VnTodayInfo_1 = {
                 img: this.img_path[this.res_vn.indexOf(v)],
                 date: v["released"],
-                title: v["alttitle"] || v["title"],
-                producer: this.getProdecer(v["developers"])
+                title: `《${v["alttitle"] || v["title"]}》`,
+                producer: this.getProducer(v["developers"])
             };
-            html.insertBlock_1(info);
+            if (v["rating"] && v["rating"] >= 80) html.insertLegendBlock_1(info, v["rating"]);
+            else html.insertBlock_1(info);
             i++;
         })
         this.res_cha.forEach(v => {
             const info: VnTodayInfo_2 = {
                 img: this.img_path[this.res_cha.indexOf(v) + i],
                 name: v["original"] || v["name"],
-                game: v["vns"][0]["alttitle"] || v["vns"][0]["title"]
+                game: this.vnsArr(v["vns"])
             };
             html.insertBlock_2(info);
             j++;
@@ -73,7 +74,8 @@ export class CreateImgVT {
             
             return base64;
         } catch (err) {
-            return "图片渲染失败";
+            if (this.ctx.config.debug) console.log("图片渲染失败！");
+            return "";
         }
     }
 
@@ -89,11 +91,12 @@ export class CreateImgVT {
         this.img_path = await this.downloader.download();
     }
 
-    getProdecer(s: Object[]): string{
+    getProducer(s: Object[]): string{
+        const ss = [];
         s.forEach(v => {
-            v = v["original"] || v["name"];
+            ss.push(v["original"] || v["name"]);
         })
-        return s.join("、");
+        return ss.join("、");
     }
 
     filterRating(): Object[][] {
@@ -101,14 +104,29 @@ export class CreateImgVT {
         let cha = [];
 
         this.res_vn.forEach(v => {
-            if (!v["rating"] || v["rating"] <= 75) return;
+            if (!v["rating"] || v["rating"] < this.ctx.config.filterRating) return;
             vn.push(v);
         })
         this.res_cha.forEach(v => {
-            if (!v["vns"][0]["rating"] || v["vns"][0]["rating"] <= 75) return;
+            if (!this.vnsSatisfy(v["vns"])) return;
             cha.push(v);
         })
 
         return [vn, cha];
+    }
+
+    vnsSatisfy(vns: Object[]): boolean {
+        for (const v of vns) {
+            if (v["rating"] && v["rating"] >= this.ctx.config.filterRating) return true;
+        }
+        return false;
+    }
+
+    vnsArr(vns: Object[]): string {
+        let arr = [];
+        vns.forEach( v => {
+            arr.push(`《${v["alttitle"] || v["title"]}》`);
+        })
+        return arr.join("、");
     }
 }

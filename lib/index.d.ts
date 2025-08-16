@@ -2,11 +2,14 @@ import { Context, Schema } from 'koishi';
 export declare const name = "pyura-vndb";
 export interface Config {
     startTips: boolean;
+    retryCount: number;
+    filterRating: number;
+    debug: boolean;
 }
 export declare const Config: Schema<Config>;
 declare module "koishi" {
     interface Tables {
-        vndbDate: {
+        vn_today_data: {
             id: number;
             date: string;
             cmd: string;

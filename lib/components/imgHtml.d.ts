@@ -1,13 +1,18 @@
 export declare class VnTodayHtml {
+    date: string;
+    week: string;
     content_1: string;
     content_2: string;
     subtitle_1: string;
     subtitle_2: string;
+    constructor();
     build(): string;
     insertSubtitle_1(text: string): void;
     insertSubtitle_2(text: string): void;
     insertBlock_1(info: VnTodayInfo_1): void;
     insertBlock_2(info: VnTodayInfo_2): void;
+    insertLegendBlock_1(info: VnTodayInfo_1, rating: number): void;
+    getDate(): void;
 }
 export interface VnTodayInfo_1 {
     img: string;

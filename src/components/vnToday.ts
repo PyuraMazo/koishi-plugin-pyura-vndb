@@ -44,9 +44,19 @@ export class VnToday {
             }
         }
 
-        const obj = await this.ctx.http.post("https://api.vndb.org/kana/" + _method, payload, {headers: {
-            "Content-Type": "application/json"
-        }})
+        let obj = {};
+        let retry = 0;
+        while (retry <= this.ctx.config.retryCount) {
+            try {
+                retry++;
+                obj = await this.ctx.http.post("https://api.vndb.org/kana/" + _method, payload, {headers: {
+                "Content-Type": "application/json"
+            }})
+                break;
+            } catch (err) {
+                if (this.ctx.config.debug) console.log(`第${retry}次请求api失败...`);
+            }
+        }
 
         return obj["results"];
     }
