@@ -157,7 +157,7 @@ export class ProducerMethod extends HandleOutput implements categoryBase  {
             "fields": this.resWordsVn.join(","),
             "sort": "rating",
             "reverse": true,
-            "results": 8
+            "results": 6
         }
 
         const res: object = await this.ctx.http.post("https://api.vndb.org/kana/vn", payload, {headers: {

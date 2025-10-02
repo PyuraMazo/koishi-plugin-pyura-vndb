@@ -54,7 +54,7 @@ export class VnToday {
             }})
                 break;
             } catch (err) {
-                if (this.ctx.config.debug) console.log(`第${retry}次请求api失败...`);
+                if (this.ctx.config.debug) this.ctx.logger.warn(`第${retry}次请求api失败...`);
             }
         }
 

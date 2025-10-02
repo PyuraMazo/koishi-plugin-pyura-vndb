@@ -106,7 +106,7 @@ export class RequestApi implements api {
             
             return requests;
           } catch (error) {
-            console.error('执行过程中出错:', error);
+            this.ctx.logger.error('执行过程中出错:', error);
             _session.send('操作失败: ' + error.message);
           }
     }
@@ -135,7 +135,7 @@ export class RequestApi implements api {
           res = await this.ctx.http.post(_url, _payload, {headers: _header});
           break;
         } catch(err) {
-          if (this.ctx.config.debug) console.log(`第${retry}次请求api失败...`);
+          if (this.ctx.config.debug) this.ctx.logger.warn(`第${retry}次请求api失败...`);
         }
       }
 

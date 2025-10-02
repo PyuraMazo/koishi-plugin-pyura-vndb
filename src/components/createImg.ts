@@ -27,7 +27,7 @@ export class CreateImgVT {
                 await this.download();
                 break;
             } catch (err) {
-                if (this.ctx.config.debug) console.log(`第${retry}次下载图片失败...`);
+                if (this.ctx.config.debug) this.ctx.logger.warn(`第${retry}次下载图片失败...`);
             }
         }
         
@@ -74,7 +74,7 @@ export class CreateImgVT {
             
             return base64;
         } catch (err) {
-            if (this.ctx.config.debug) console.log("图片渲染失败！");
+            if (this.ctx.config.debug) this.ctx.logger.warn("图片渲染失败！");
             return "";
         }
     }

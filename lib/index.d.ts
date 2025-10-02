@@ -20,4 +20,4 @@ export declare const inject: {
     required: string[];
     optional: string[];
 };
-export declare function apply(ctx: Context): void;
+export declare function apply(ctx: Context): Promise<void>;
