@@ -16,10 +16,10 @@ export async function init(_ctx: Context) {
     return await new Init(_ctx).init();
 }
 
-export async function downloadAssets(_ctx: Context): Promise<string[]> {
+export async function downloadAssets(_ctx: Context): Promise<string[] | string> {
     const res = [];
 
-    const ele = path.join(__dirname, 'elememts');
+    const ele = path.join(__dirname, 'elements');
     if (!fs.existsSync(ele)) {
         try {
             let response;
@@ -64,41 +64,40 @@ export async function downloadAssets(_ctx: Context): Promise<string[]> {
         }
     }
     const font = path.join(__dirname, 'fonts');
-    if (_ctx.config.font && !fs.existsSync(font)) {
-        try {
-            fs.mkdirSync(font);
-            const headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Accept': 'application/font-ttf,application/font-woff,*/*',
-                'Referer': 'https://fonts.googleapis.com/'
-            };
+    try {
+        fs.mkdirSync(font);
+        const headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'application/font-ttf,application/font-woff,*/*',
+            'Referer': 'https://fonts.googleapis.com/'
+        };
 
-            const response1 = await _ctx.http.get('https://qwq.pyuramazo.online/Inner/Fonts/GeTeShiZiTi-1.ttf', {
-                responseType: 'stream',
-                headers,
-                timeout: 60000
-            })
-            await pipeline(response1, fs.createWriteStream(path.join(font, 'GeTeShiZiTi-1.ttf')));
+        const response1 = await _ctx.http.get('https://qwq.pyuramazo.online/Inner/Fonts/GeTeShiZiTi-1.ttf', {
+            responseType: 'stream',
+            headers,
+            timeout: 60000
+        })
+        await pipeline(response1, fs.createWriteStream(path.join(font, 'GeTeShiZiTi-1.ttf')));
 
-            const response2 = await _ctx.http.get('https://qwq.pyuramazo.online/Inner/Fonts/simhei.ttf', {
-                responseType: 'stream',
-                headers,
-                timeout: 60000
-            })
-            await pipeline(response2, fs.createWriteStream(path.join(font, 'simhei.ttf')));
+        const response2 = await _ctx.http.get('https://qwq.pyuramazo.online/Inner/Fonts/simhei.ttf', {
+            responseType: 'stream',
+            headers,
+            timeout: 60000
+        })
+        await pipeline(response2, fs.createWriteStream(path.join(font, 'simhei.ttf')));
 
-            const response3 = await _ctx.http.get('https://qwq.pyuramazo.online/Inner/Fonts/Hangyaku-L3oaG.ttf', {
-                responseType: 'stream',
-                headers,
-                timeout: 60000
-            })
-            await pipeline(response3, fs.createWriteStream(path.join(font, 'Hangyaku-L3oaG.ttf')));
+        const response3 = await _ctx.http.get('https://qwq.pyuramazo.online/Inner/Fonts/Hangyaku-L3oaG.ttf', {
+            responseType: 'stream',
+            headers,
+            timeout: 60000
+        })
+        await pipeline(response3, fs.createWriteStream(path.join(font, 'Hangyaku-L3oaG.ttf')));
 
-            res.push('tempImgs初始化成功！');
-        } catch (e) {
-            res.push(`tempImgs初始化失败：${e.message}}`);
-        }
+        res.push('tempImgs初始化成功！');
+    } catch (e) {
+        res.push(`tempImgs初始化失败：${e.message}}`);
     }
+    if (res.length === 0) return '所有资源文件已经初始化！'
     return res;
 }
 

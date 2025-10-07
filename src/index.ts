@@ -20,8 +20,7 @@ export const Config: Schema<Config> = Schema.intersect([
   }).description('全局配置'),
 
   Schema.object({
-    filterRating: Schema.number().min(60).max(85).default(70).description("过滤低于此评分的作品的内容展示"),
-    font: Schema.boolean().default(true).description("启用特殊字体")
+    filterRating: Schema.number().min(60).max(85).default(70).description("过滤低于此评分的作品的内容展示")
   }).description('VnToday配置'),
 
   Schema.object({
@@ -50,8 +49,11 @@ export async function apply(ctx: Context) {
   if (ctx.config.debug) ctx.logger.warn("插件重载，删除当日数据库信息。");
   load(ctx);
   
-  const resp = downloadAssets(ctx);
-  if (ctx.config.debug) ctx.logger.warn(await resp);
+  const resp = await downloadAssets(ctx);
+  ctx.logger.success(resp);
+  if (resp.includes('失败')) {
+    ctx.logger.error('有资源初始化失败，请尝试重新加载插件以重试！');
+  }
   
   ctx
   .command('vndb <...searchKey: string>', '查找vndb中的搜索结果')

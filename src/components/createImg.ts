@@ -61,7 +61,7 @@ export class CreateImgVT {
         if (j === 0 ) html.insertSubtitle_2("好像没有找到知名的角色的生日是今天...")
         else html.insertSubtitle_2("今天是这些角色的生日  你认识TA们吗  ")
 
-        const source = html.build();
+        const source = html.build().replace(/\\/g, '/');
         
         try{
             const base64 = await this.ctx.puppeteer.render(source, async (page, next) => {

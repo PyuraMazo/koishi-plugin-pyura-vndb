@@ -4,7 +4,7 @@ export interface ResponseInfo {
     characterField: object;
 }
 export declare function init(_ctx: Context): Promise<string>;
-export declare function downloadAssets(_ctx: Context): Promise<string[]>;
+export declare function downloadAssets(_ctx: Context): Promise<string[] | string>;
 export declare function load(_ctx: Context): Promise<void>;
 export declare class Init {
     now: string;
