@@ -1,20 +1,20 @@
 {
   "name": "koishi-plugin-pyura-vndb",
-  "description": "通过VNDB的API实现查询GAL信息的功能",
-  "version": "2.0.0",
+  "description": "通过VNDB的API实现查询Galgame/视觉小说游戏信息的功能",
+  "version": "2.1.0",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
     "lib",
     "dist"
   ],
-  "homepage": "https://github.com/PyuraMazo/koishi-plugin-pyura-vndb-2.0-",
+  "homepage": "https://github.com/PyuraMazo/koishi-plugin-pyura-vndb/",
   "contributors": [
-    "Pyura <1605025385@qq.com>"
+    "Pyura <pyuramazo@vip.qq.com>"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PyuraMazo/koishi-plugin-pyura-vndb-2.0-.git"
+    "url": "git+https://github.com/PyuraMazo/koishi-plugin-pyura-vndb/"
   },
   "license": "MIT",
   "keywords": [
@@ -30,7 +30,8 @@
   },
   "dependencies": {
     "@koishijs/plugin-http": "^0.6.3",
-    "koishi-plugin-puppeteer": "^3.9.0"
+    "koishi-plugin-puppeteer": "^3.9.0",
+    "ejs": "4.0.1"
   },
   "devDependencies": {
     "koishi-plugin-puppeteer": "^3.9.0"
@@ -38,12 +39,9 @@
   "koishi": {
     "service": {
       "required": [
-        "http"
-      ],
-      "optional": [
+        "http",
         "puppeteer"
       ]
-    },
-    "preview": true
+    }
   }
 }
