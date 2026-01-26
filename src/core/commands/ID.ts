@@ -9,13 +9,15 @@ import { Registry } from "../Registry";
 export function apply(ctx: Context, main: Command<never, never, string[], {}>) {
     main
         .subcommand('.id <keyword:string>', '查询ID')
+        .option('refresh', '-r', { fallback: false })
         .alias('vndb.i', 'id')
-        .action(async ({ session }, keyword) => {
+        .action(async ({ session, options }, keyword) => {
             const task: TaskUnit = {
                 type: CommandType.ID,
                 value: keyword,
                 activated: false,
-                session: session
+                session: session,
+                options: options
             }
 
             const group = Registry.getInstance().register_or_get(session.channelId)

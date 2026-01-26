@@ -49,14 +49,35 @@ export class DataPersistence {
         if (res.length === 0) {
             return null;
         } else if (res.length > 1) {
-            logger.info('数据库有重复信息！')
+            logger.info('数据库有重复数据！开始清除并保留一个。')
+
+            try {
+                for (let index = 1; index < res.length; index++) {
+                    await this.drop({
+                        id: res[index].id
+                    });
+                    if (this.textOutput) await File.removeFile(path.join(this.textCacheDir, `${res[index].id}.txt`))
+                    if (this.imageOutput) await File.removeFile(path.join(this.imageCacheDir, `${res[index].id}.png`))
+                }
+            } catch (e) {
+                logger.error('清除重复数据失败！建议重载插件以刷新。')
+            }
         } else {
-            logger.success('从数据库读取信息！')
+            const id = res[0].id;
+            if (_task.options['refresh']) {
+                await this.drop({
+                    id: id
+                });
+                if (this.textOutput) await File.removeFile(path.join(this.textCacheDir, `${id}.txt`))
+                if (this.imageOutput) await File.removeFile(path.join(this.imageCacheDir, `${id}.png`))
+                return null;
+            } else {
+                logger.success('从数据库读取信息！')
+                const textData = this.textOutput ? await File.readText(path.join(this.textCacheDir, `${id}.txt`)) : '';
+                const imageData = this.imageOutput ? h.image(await File.readBuffer(path.join(this.imageCacheDir, `${id}.png`)), 'image/png') : null;
+                return [textData, imageData]
+            }
         }
-        const id = res[0].id;
-        const textData = this.textOutput ? await File.readText(path.join(this.textCacheDir, `${id}.txt`)) : '';
-        const imageData = this.imageOutput ? h.image(await File.readBuffer(path.join(this.imageCacheDir, `${id}.png`)), 'image/png') : null;
-        return [textData, imageData]
     }
 
     async record(_task: TaskUnit, _text: string, _image: string) {

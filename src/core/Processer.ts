@@ -51,8 +51,9 @@ export class Processer {
             if (this.withdrawTips) _task.replyId = (await ready)[0];
             this.running = !this.queue.isEmpty();
             while (this.running && this.runningCount < this.processHandling) {
-                this.runningCount++;
                 const handling = this.queue.next();
+                if (handling === null) return;
+                this.runningCount++;
                 const msgId = await this.taskLine(handling);
                 this.runningCount--;
                 const finished = this.queue.deQueue(msgId);
@@ -74,11 +75,15 @@ export class Processer {
 
             try {
                 // 强制异常任务出队
-                this.queue.deQueue(sess.messageId);
+                this.queue.deQueue(sess.messageId, true);
             } catch {
                 logger.error("引发异常，异常发生时本次任务已经出队。");
             }
         }
+    }
+
+    copyQueue() {
+        return Array.from(this.queue.getQueue());
     }
 
     private async taskLine(_task: TaskUnit): Promise<string> {

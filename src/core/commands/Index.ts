@@ -5,6 +5,7 @@ import * as Character from './Character'
 import * as Producer from './Producer'
 import * as ID from './ID'
 import * as Event from "./Event";
+import * as Sundry from "./Sundry";
 
 
 
@@ -18,4 +19,6 @@ export function apply(ctx: Context) {
     Producer.apply(ctx, main);
     ID.apply(ctx, main);
     Event.apply(ctx, main);
+
+    Sundry.apply(ctx, main);
 }

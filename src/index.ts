@@ -34,7 +34,7 @@ export const Config: Schema<PluginConfig> = Schema.intersect([
   Schema.object({
     retryCount: Schema.number().min(1).max(10).default(3).description("请求服务器时最大重连次数"),
     withdrawTips: Schema.boolean().default(false).description("当本次任务发送成功后撤回提示消息"),
-    adminsId: Schema.array(String).description("管理员ID列表").hidden(),
+    adminsId: Schema.array(String).description("管理员ID列表"),
     detailLog: Schema.boolean().default(true).description("在控制台输出更详细的日志信息")
   }).description('全局配置'),
 

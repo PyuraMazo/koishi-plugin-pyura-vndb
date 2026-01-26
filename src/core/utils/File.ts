@@ -72,6 +72,16 @@ export class File {
         }
     }
 
+    static async removeFile(_path: string) {
+        try {
+            await fs.rm(_path, {
+                force: true
+            });
+        } catch {
+            throw new Error(`删除文件错误！（${_path}）`);
+        }
+    }
+
     static async removeAll(_path: string) {
         try {
             await fs.rm(_path, {

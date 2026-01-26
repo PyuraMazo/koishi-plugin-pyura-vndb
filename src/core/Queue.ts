@@ -15,9 +15,9 @@ export class Queue {
     }
 
     // 运行元素出队并获取出队元素
-    deQueue(_id: string): TaskUnit {
+    deQueue(_id: string, _force = false): TaskUnit {
         for (let index = 0; index < this.queue.length; index++) {
-            if (!this.queue[index].activated) {
+            if (!(this.queue[index].activated || _force)) {
                 continue;
             }
 
@@ -39,6 +39,11 @@ export class Queue {
         }
         return null;
     }
+
+    getQueue(): TaskUnit[] {
+        return this.queue;
+    }
+        
 
     isEmpty() {
         return this.queue.length === 0;

@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-pyura-vndb",
   "description": "通过VNDB的API实现查询Galgame/视觉小说游戏信息的功能",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [

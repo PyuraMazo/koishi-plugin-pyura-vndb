@@ -29,12 +29,17 @@ export interface Config {
     dataStorage: number,
 }
 
+export interface Options {
+    refresh: boolean
+}
+
 
 export interface TaskUnit {
     type: CommandType,
     value: string,
     activated: boolean,
     session: Session,
+    options: object,
     replyId?: string
 }
 
